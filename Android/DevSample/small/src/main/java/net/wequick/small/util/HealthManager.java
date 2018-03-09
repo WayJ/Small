@@ -16,6 +16,7 @@
 package net.wequick.small.util;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.util.Log;
@@ -36,6 +37,8 @@ import java.util.List;
  */
 public class HealthManager {
 
+    //对某些手机开启强制模式，强制替换resource、theme
+    public static final String MandatoryMode="MandatoryMode";
     private static final String TAG = "HealthManager";
 
     public static boolean fixException(Object obj, Throwable e) {
@@ -76,6 +79,7 @@ public class HealthManager {
         AssetManager assets = activity.getAssets();
         AssetManager appAssets = activity.getApplication().getAssets();
         if (!assets.equals(appAssets)) {
+            setMandatoryMode(true);
             err += "The activity assets are different from application.\n";
             err += getAssetPathsDebugInfo(appAssets, themeId, "Application") + "\n";
             err += getAssetPathsDebugInfo(assets, themeId, "Activity");
@@ -202,4 +206,25 @@ public class HealthManager {
         }
         return 0;
     }
+
+
+
+    private static void setMandatoryMode(boolean isMandatoryMode) {
+        SharedPreferences small = Small.getSharedPreferences();
+        SharedPreferences.Editor editor = small.edit();
+        if (!isMandatoryMode) {
+            editor.remove(MandatoryMode);
+        } else {
+            editor.putBoolean(MandatoryMode, isMandatoryMode);
+        }
+        editor.apply();
+    }
+
+    private static Boolean openMandatoryMode=null;
+    public static boolean checkOpenMandatoryModeIfNeeded(){
+        if(openMandatoryMode==null)
+            openMandatoryMode=Small.getSharedPreferences().getBoolean(MandatoryMode,false);
+        return openMandatoryMode;
+    }
+
 }

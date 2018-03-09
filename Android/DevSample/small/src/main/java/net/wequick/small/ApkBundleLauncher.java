@@ -46,6 +46,7 @@ import android.view.Window;
 import net.wequick.small.internal.InstrumentationInternal;
 import net.wequick.small.util.HealthManager;
 import net.wequick.small.util.ReflectAccelerator;
+import net.wequick.small.util.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -327,6 +328,11 @@ public class ApkBundleLauncher extends SoBundleLauncher {
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
+            }
+
+            if(HealthManager.checkOpenMandatoryModeIfNeeded()){
+                ResourceUtils.replaceThemeV7(activity);
+                ResourceUtils.replaceResources(activity);
             }
 
             sHostInstrumentation.callActivityOnCreate(activity, icicle);
